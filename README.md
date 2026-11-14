@@ -182,7 +182,7 @@ terraform plan
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.11.0 |
 | <a name="requirement_crosswork"></a> [crosswork](#requirement\_crosswork) | ~> 0.1.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.3.0 |
@@ -190,7 +190,7 @@ terraform plan
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_golden_configuration_directories"></a> [golden\_configuration\_directories](#input\_golden\_configuration\_directories) | List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template. | `list(string)` | `[]` | no |
 | <a name="input_instance"></a> [instance](#input\_instance) | Name of the provider instance (controller) the resources are created on. Leave it unset to use the default instance. | `string` | `null` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
@@ -200,13 +200,13 @@ terraform plan
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_default_values"></a> [default\_values](#output\_default\_values) | All default values. |
 | <a name="output_model"></a> [model](#output\_model) | Full model with the write-only secrets omitted. Secrets without a `_version` are still included, so the value is marked sensitive. |
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [crosswork_alarm_settings.alarm_settings](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/alarm_settings) | resource |
 | [crosswork_assign_devices_to_access_group.assignment](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_access_group) | resource |
 | [crosswork_assign_devices_to_data_gateway.gateway](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_data_gateway) | resource |
