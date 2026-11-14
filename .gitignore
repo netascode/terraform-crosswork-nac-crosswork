@@ -1,0 +1,8 @@
+.terraform/
+.terraform.lock.hcl
+*.tfstate*
+*.tfvars
+crash.log
+.env
+.envrc
+defaults.yaml.out

@@ -1,0 +1,128 @@
+---
+defaults:
+  crosswork:
+    administration:
+      users:
+        locked: false
+      nso_policies:
+        match: true
+        match_rule: "*"
+        onboard_to_nso: true
+        onboard_to_nso_rule: "*"
+        onboard_from_nso: false
+        onboard_from_nso_rule: "*"
+        sync_from_nso: true
+        sync_from_nso_rule: "*"
+        check_sync: true
+        check_sync_rule: "*"
+      settings:
+        pre_login_disclaimer:
+          enabled: false
+          require_acknowledgement: false
+          title: Crosswork Legal Disclaimer
+          message: Welcome to Cisco Crosswork. Logging into the system means that you acknowledge and agree to comply with Cisco Crosswork terms and conditions.
+          icon: info
+        survey:
+          enabled: true
+        file_servers:
+          ftp_enabled: false
+          sftp_upload_enabled: false
+        smart_licensing:
+          mode: direct
+        data_retention:
+          device_performance:
+            raw_hours: 24
+            hourly_days: 7
+            daily_days: 31
+            weekly_weeks: 54
+          network_performance:
+            collect_lsp_state_change: true
+            collect_lsp_path_change: true
+            collect_lsp_utilization: true
+            collect_lsp_pm: false
+            collect_link_pm: false
+            raw_hours: 24
+            hourly_days: 7
+            daily_days: 31
+            weekly_weeks: 52
+        performance_monitoring:
+          health_settings:
+            optical_zrp:
+              unit: bps
+        topology:
+          metric_thresholds:
+            unit: ms
+          discovery:
+            lldp: true
+            cdp: true
+            lag: true
+        traffic_engineering:
+          general_settings:
+            policy_unused_threshold_kbps: 1000
+            policy_provisioning_timeout_seconds: 60
+            bandwidth_on_demand_provisioning_timeout_seconds: 90
+            igp_path_request_timeout_seconds: 180
+            policy_details_request_timeout_seconds: 180
+        alarms_and_events:
+          cleanup_options:
+            security_device_alarms_cleared_days: 30
+            non_security_device_alarms_cleared_days: 7
+            all_events_days: 30
+            device_alarms_days: 60
+            system_alarms_days: 60
+            network_alarms_days: 60
+            audit_logs_days: 30
+          general:
+            trap_processing: true
+            syslog_processing: true
+          notification_destinations:
+            trap_receivers:
+              port: 162
+              snmp_version: v2c
+              notification_type: udp
+            syslog_receivers:
+              port: 514
+              protocol: udp
+      data_gateway:
+        pools:
+          spares: 0
+          cdg_readiness_timeout: 60
+        resource_configuration:
+          update_timeout: 120
+        collection_jobs:
+          cadence:
+            reachability_check:
+              hours: 0
+              minutes: 10
+            snmp_check:
+              hours: 0
+              minutes: 20
+            te_tunnel_id:
+              hours: 0
+              minutes: 20
+            show_clock:
+              hours: 0
+              minutes: 30
+    device_management:
+      golden_configuration:
+        templates:
+          mode: merge
+          config_type: native
+          vendor: Cisco Systems
+          software_type: IOS XR
+          global_schedule_audit: true
+          mop: Default Golden Config - Cisco
+          parallel_execution: 1
+          deployment_timeout: 900
+          force_delete: false
+    services:
+      l2vpn:
+        vpn_services:
+          service_assurance:
+            profile_type: system
+            rule_type: system
+      l3vpn:
+        vpn_services:
+          service_assurance:
+            profile_type: system
+            rule_type: system

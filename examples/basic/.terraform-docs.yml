@@ -1,0 +1,46 @@
+version: ">= 0.14.0"
+
+formatter: markdown table
+
+content: |-
+  # Cisco Crosswork Example
+
+  Set environment variables pointing to Crosswork:
+
+  ```bash
+  export CW_URL=https://10.1.1.1
+  export CW_USERNAME=admin
+  export CW_PASSWORD=Cisco123
+  ```
+
+  To run this example you need to execute:
+
+  ```bash
+  $ terraform init
+  $ terraform plan
+  $ terraform apply
+  ```
+
+  Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
+
+  #### `administration.yaml`
+
+  ```yaml
+  {{ include "./administration.yaml" }}
+  ```
+
+  #### `device_management.yaml`
+
+  ```yaml
+  {{ include "./device_management.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./main.tf" }}
+  ```
+
+output:
+  file: README.md
+  mode: replace

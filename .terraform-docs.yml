@@ -1,0 +1,106 @@
+version: ">= 0.14.0"
+
+formatter: markdown table
+
+content: |-
+  # Terraform Network-as-Code Cisco Crosswork Module
+
+  A Terraform module to configure Cisco Crosswork Network Controller.
+
+  ## Usage
+
+  This module supports an inventory driven approach, where a complete Crosswork configuration or parts of it are either modeled in one or more YAML files or natively using Terraform variables.
+
+  ## Examples
+
+  Configuring roles, users and credential profiles using YAML:
+
+  #### `administration.yaml`
+
+  ```yaml
+  {{ include "./examples/basic/administration.yaml" }}
+  ```
+
+  #### `device_management.yaml`
+
+  ```yaml
+  {{ include "./examples/basic/device_management.yaml" }}
+  ```
+
+  #### `main.tf`
+
+  ```hcl
+  {{ include "./examples/basic/main.tf" }}
+  ```
+
+  ## Using the provider before it is in the Terraform Registry
+
+  The `CiscoDevNet/crosswork` provider is not published to the Terraform Registry yet. Until it is, build it and install it from a local filesystem mirror. A development override is not enough: `terraform init` fails for a provider that the Registry does not have.
+
+  1. Build the provider (Go 1.26 or later):
+
+  ```bash
+  git clone https://github.com/netascode/terraform-provider-crosswork.git
+  cd terraform-provider-crosswork
+  go build -o terraform-provider-crosswork .
+  ```
+
+  2. Install it in a mirror folder. Use your own operating system and architecture instead of `linux_amd64`, and a version that `versions.tf` accepts:
+
+  ```bash
+  DIR=$HOME/terraform-mirror/registry.terraform.io/ciscodevnet/crosswork/0.1.0/linux_amd64
+  mkdir -p $DIR
+  cp terraform-provider-crosswork $DIR/terraform-provider-crosswork_v0.1.0
+  ```
+
+  3. Take this provider from the mirror and all others from the Registry. This writes `~/.terraformrc`; merge it into your file if you already have one:
+
+  ```bash
+  cat > ~/.terraformrc << EOF
+  provider_installation {
+    filesystem_mirror {
+      path    = "$HOME/terraform-mirror"
+      include = ["CiscoDevNet/crosswork"]
+    }
+    direct {
+      exclude = ["CiscoDevNet/crosswork"]
+    }
+  }
+  EOF
+  ```
+
+  4. Clone this module next to the provider and replace the example `main.tf` with one that uses your clone instead of the Registry. A `version` argument is only valid for a Registry source, so it is left out. This changes a file of the clone, so do not commit it:
+
+  ```bash
+  cd ..
+  git clone https://github.com/netascode/terraform-crosswork-nac-crosswork.git
+  cd terraform-crosswork-nac-crosswork
+  cat > examples/basic/main.tf << 'EOF'
+  module "crosswork" {
+    source = "../.."
+
+    yaml_files = ["administration.yaml", "device_management.yaml"]
+  }
+  EOF
+  ```
+
+  5. Set `CW_URL`, `CW_USERNAME` and `CW_PASSWORD`, then run Terraform in the example folder:
+
+  ```bash
+  cd examples/basic
+  terraform init
+  terraform plan
+  ```
+
+  {{ .Requirements }}
+  {{ .Inputs }}
+  {{ .Outputs }}
+  {{ .Resources }}
+  {{ .Modules }}
+output:
+  file: README.md
+  mode: replace
+
+sort:
+  enabled: true
+  by: required

@@ -1,0 +1,47 @@
+---
+crosswork:
+  device_management:
+    credential_profiles:
+      - name: device-profile
+        credentials:
+          - type: SSH
+            user_name: cwtest
+            password: CwtestPass123!
+            password_version: 1
+          - type: SNMPv2
+            read_community: cwtest-read
+            read_community_version: 1
+      - name: nso-profile
+        credentials:
+          - type: SSH
+            user_name: cwtest
+            password: CwtestPass123!
+            password_version: 1
+          - type: NETCONF
+            user_name: cwtest
+            password: CwtestPass123!
+            password_version: 1
+          - type: HTTPS
+            user_name: cwtest
+            password: CwtestPass123!
+            password_version: 1
+    network_devices:
+      - name: router-1
+        connectivity:
+          credential_profile: device-profile
+          capabilities:
+            - SNMP
+          protocols:
+            - protocol: SSH
+              ip_address: 10.10.10.1
+              prefix_length: 24
+            - protocol: SNMP
+              ip_address: 10.10.10.1
+              prefix_length: 32
+              timeout: 120
+        providers:
+          family: NSO
+          name: nso
+        location:
+          latitude: 37.33
+          longitude: -121.89

@@ -1,0 +1,41 @@
+---
+crosswork:
+  administration:
+    roles:
+      - name: cwtest-operator
+        api_permissions:
+          - category: device-monitoring
+            access: read
+          - task: alarms-events
+            access: read
+          - task: alarm-notification-policies
+            access: read-write
+        task_permissions:
+          - view-audit-logs
+    users:
+      - username: cwtest-user
+        password: CwtestPass123!
+        password_version: 1
+        first_name: Test
+        last_name: User
+        role: cwtest-operator
+        device_access_groups:
+          - ALL-ACCESS
+        locked: false
+    provider_profiles:
+      - name: nso
+        family: NSO
+        credential_profile: nso-profile
+        connectivity:
+          - protocol: SSH
+            ip_address: 10.10.10.2
+            port: 22
+          - protocol: NETCONF
+            ip_address: 10.10.10.2
+            port: 2022
+          - protocol: HTTPS
+            ip_address: 10.10.10.2
+            port: 8888
+        models:
+          - prefix: cisco-ios-xr
+            version: 7.8.2
