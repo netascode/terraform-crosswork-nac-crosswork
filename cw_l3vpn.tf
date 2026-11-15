@@ -136,7 +136,7 @@ locals {
           export_policy  = try(family.export_policy, null)
         }]
       }]
-      vpn_nodes = [for node in service.nodes : {
+      vpn_nodes = try(length(service.nodes) == 0, true) ? null : [for node in service.nodes : {
         vpn_node_id = node.device
         local_as    = try(node.local_as, local.l3vpn_node_defaults.local_as, null)
         active_vpn_instance_profiles = [{
