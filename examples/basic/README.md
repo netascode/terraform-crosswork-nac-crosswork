@@ -46,7 +46,8 @@ crosswork:
         device_access_groups:
           - ALL-ACCESS
         locked: false
-    provider_profiles:
+  providers:
+    profiles:
       - name: nso
         family: NSO
         credential_profile: nso-profile

@@ -1,8 +1,8 @@
 ### GOLDEN CONFIGURATION ###
 
 locals {
-  golden_configuration    = try(local.crosswork.device_management.golden_configuration, {})
-  golden_defaults         = try(local.defaults.crosswork.device_management.golden_configuration.templates, {})
+  golden_configuration    = try(local.crosswork.golden_configuration, {})
+  golden_defaults         = try(local.defaults.crosswork.golden_configuration.templates, {})
   golden_global_variables = { for variable in try(local.golden_configuration.global_variables, []) : variable.name => variable }
   golden_templates        = { for template in try(local.golden_configuration.templates, []) : template.name => template }
 

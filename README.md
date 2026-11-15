@@ -38,7 +38,8 @@ crosswork:
         device_access_groups:
           - ALL-ACCESS
         locked: false
-    provider_profiles:
+  providers:
+    profiles:
       - name: nso
         family: NSO
         credential_profile: nso-profile
@@ -219,7 +220,7 @@ terraform plan
 | [crosswork_data_gateway_destinations.destination](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_gateway_destinations) | resource |
 | [crosswork_data_gateway_global_parameters.global_parameters](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_gateway_global_parameters) | resource |
 | [crosswork_data_gateway_pools.pool](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_gateway_pools) | resource |
-| [crosswork_data_gateway_resource_configuration.resource_configuration](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_gateway_resource_configuration) | resource |
+| [crosswork_data_gateway_resource_configuration.resource_configurations](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_gateway_resource_configuration) | resource |
 | [crosswork_data_retention_device_performance.device_performance](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_retention_device_performance) | resource |
 | [crosswork_data_retention_network_performance.network_performance](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_retention_network_performance) | resource |
 | [crosswork_device_access_groups.level_1](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
@@ -267,9 +268,9 @@ terraform plan
 | [crosswork_login_banner.login_banner](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/login_banner) | resource |
 | [crosswork_metric_thresholds.metric_thresholds](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/metric_thresholds) | resource |
 | [crosswork_network_devices.network_device](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/network_devices) | resource |
-| [crosswork_nso_provider_policies.nso_policy](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/nso_provider_policies) | resource |
 | [crosswork_port_groups.port_group](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/port_groups) | resource |
 | [crosswork_port_groups_rules.rule](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/port_groups_rules) | resource |
+| [crosswork_provider_nso_policies.nso_policy](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/provider_nso_policies) | resource |
 | [crosswork_provider_profiles.provider_profile](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/provider_profiles) | resource |
 | [crosswork_resource_pools.resource_pool](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/resource_pools) | resource |
 | [crosswork_roles.role](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/roles) | resource |

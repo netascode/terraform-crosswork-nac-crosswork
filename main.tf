@@ -23,12 +23,12 @@ locals {
   exported_golden_variable = { for name, variable in try(local.golden_global_variables, {}) : name => {
     for key, value in variable : key => value if !(key == "value" && try(variable.value_version, null) != null)
   } }
-  exported_golden_configuration = merge(try(local.crosswork.device_management.golden_configuration, {}),
-    try(local.crosswork.device_management.golden_configuration.global_variables, null) == null ? {} : {
-      global_variables = [for variable in local.crosswork.device_management.golden_configuration.global_variables : local.exported_golden_variable[variable.name]]
+  exported_golden_configuration = merge(try(local.crosswork.golden_configuration, {}),
+    try(local.crosswork.golden_configuration.global_variables, null) == null ? {} : {
+      global_variables = [for variable in local.crosswork.golden_configuration.global_variables : local.exported_golden_variable[variable.name]]
     },
-    try(local.crosswork.device_management.golden_configuration.templates, null) == null ? {} : {
-      templates = [for template in local.crosswork.device_management.golden_configuration.templates : merge(template,
+    try(local.crosswork.golden_configuration.templates, null) == null ? {} : {
+      templates = [for template in local.crosswork.golden_configuration.templates : merge(template,
         try(template.variables, null) == null ? {} : {
           variables = [for variable in template.variables : {
             for key, value in variable : key => value if !(key == "value" && try(variable.value_version, null) != null)
@@ -52,7 +52,6 @@ locals {
   )]
   exported_device_management = merge(try(local.crosswork.device_management, {}),
     try(local.crosswork.device_management.credential_profiles, null) == null ? {} : { credential_profiles = local.exported_credential_profiles },
-    try(local.crosswork.device_management.golden_configuration, null) == null ? {} : { golden_configuration = local.exported_golden_configuration },
     try(local.crosswork.device_management.network_devices, null) == null ? {} : { network_devices = local.exported_network_devices },
   )
   exported_model = merge(local.model,
@@ -63,6 +62,9 @@ locals {
         },
         try(local.crosswork.device_management, null) == null ? {} : {
           device_management = local.exported_device_management
+        },
+        try(local.crosswork.golden_configuration, null) == null ? {} : {
+          golden_configuration = local.exported_golden_configuration
         },
       )
     }
