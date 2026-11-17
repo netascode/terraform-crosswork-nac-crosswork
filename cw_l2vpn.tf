@@ -263,6 +263,7 @@ resource "crosswork_l2vpn_vpn_services" "vpn_service" {
     crosswork_l2vpn_route_policies.routing_policy,
     crosswork_l2vpn_qos_profile_ids.qos_profile,
     crosswork_l2vpn_id_pools.id_pools,
-    crosswork_srte_policies.policy
+    crosswork_srte_policies.policy,
+    crosswork_srte_odn_templates.odn_template
   ]
 }
