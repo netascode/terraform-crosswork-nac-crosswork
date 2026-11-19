@@ -258,7 +258,7 @@ resource "crosswork_l2vpn_vpn_services" "vpn_service" {
   depends_on = [
     crosswork_network_devices.network_device,
     crosswork_assign_devices_to_data_gateway.gateway,
-    crosswork_golden_config_jobs.job,
+    crosswork_golden_config_jobs.job_9,
     crosswork_l2vpn_y1731_profiles.y1731_profile,
     crosswork_l2vpn_route_policies.routing_policy,
     crosswork_l2vpn_qos_profile_ids.qos_profile,

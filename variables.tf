@@ -29,7 +29,7 @@ variable "write_default_values_file" {
 }
 
 variable "golden_configuration_directories" {
-  description = "List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template."
+  description = "List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template, in the directory or any subfolder."
   type        = list(string)
   default     = []
 }

@@ -6,11 +6,12 @@ locals {
   golden_global_variables = { for variable in try(local.golden_configuration.global_variables, []) : variable.name => variable }
   golden_templates        = { for template in try(local.golden_configuration.templates, []) : template.name => template }
 
-  # The body of a template is the file <template name>.j2 in one of the listed directories. The module reads it with
+  # The body of a template is the file <template name>.j2 anywhere under one of the listed directories (subfolders
+  # included; the folder is not part of the name, so a name must be unique across all of them). The module reads it with
   # file(), never templatefile(): Terraform does not render it, the controller does. A CRLF line ending becomes LF.
   golden_body_files = flatten([
     for directory in var.golden_configuration_directories : [
-      for path in fileset(".", "${directory}/*.j2") : { name = trimsuffix(basename(path), ".j2"), path = path }
+      for path in fileset(".", "${directory}/**/*.j2") : { name = trimsuffix(basename(path), ".j2"), path = path }
     ]
   ])
   golden_body_paths = { for file in local.golden_body_files : file.name => file.path... }
@@ -57,6 +58,13 @@ locals {
     { for applied in local.golden_applied : applied.device => applied.variables if applied.template == name },
   ) }
   golden_jobs = { for name, devices in local.golden_template_devices : name => devices if length(devices) > 0 }
+
+  # The jobs by tier: the `order` of a template (0 to 9, default 0) puts its job in the resource of that tier, and a tier
+  # starts when the one before it has finished.
+  golden_job_tiers = { for tier in range(10) : tier => {
+    for name, devices in local.golden_jobs : name => devices
+    if try(local.golden_templates[name].order, try(local.golden_defaults.order, 0)) == tier
+  } }
 
   # A change to the template body, mode, format or variables, or to a global variable it uses, must reach the unchanged
   # devices too, so the job gets a hash of them. A global variable counts as used when its name is a whole word in the
@@ -125,8 +133,9 @@ resource "crosswork_golden_config_templates" "template" {
   ]
 }
 
-resource "crosswork_golden_config_jobs" "job" {
-  for_each           = local.golden_jobs
+# One job resource per tier
+resource "crosswork_golden_config_jobs" "job_0" {
+  for_each           = local.golden_job_tiers[0]
   instance           = var.instance
   template_name      = crosswork_golden_config_templates.template[each.key].name
   template_config_id = crosswork_golden_config_templates.template[each.key].config_id
@@ -143,5 +152,185 @@ resource "crosswork_golden_config_jobs" "job" {
   depends_on = [
     crosswork_network_devices.network_device,
     crosswork_golden_config_global_variables.global_variable
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_1" {
+  for_each           = local.golden_job_tiers[1]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_0
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_2" {
+  for_each           = local.golden_job_tiers[2]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_1
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_3" {
+  for_each           = local.golden_job_tiers[3]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_2
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_4" {
+  for_each           = local.golden_job_tiers[4]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_3
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_5" {
+  for_each           = local.golden_job_tiers[5]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_4
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_6" {
+  for_each           = local.golden_job_tiers[6]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_5
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_7" {
+  for_each           = local.golden_job_tiers[7]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_6
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_8" {
+  for_each           = local.golden_job_tiers[8]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_7
+  ]
+}
+
+resource "crosswork_golden_config_jobs" "job_9" {
+  for_each           = local.golden_job_tiers[9]
+  instance           = var.instance
+  template_name      = crosswork_golden_config_templates.template[each.key].name
+  template_config_id = crosswork_golden_config_templates.template[each.key].config_id
+  vendor             = try(local.golden_templates[each.key].vendor, local.golden_defaults.vendor)
+  product_series     = tolist(local.golden_templates[each.key].product_series)[0]
+  mop                = try(local.golden_templates[each.key].mop, local.golden_defaults.mop)
+  batch_size         = try(local.golden_templates[each.key].parallel_execution, try(local.golden_defaults.parallel_execution, null))
+  error_budget       = try(local.golden_templates[each.key].acceptable_failures, try(local.golden_defaults.acceptable_failures, null))
+  tags               = try(local.golden_templates[each.key].job_tags, try(local.golden_defaults.job_tags, null)) == null ? null : toset(try(local.golden_templates[each.key].job_tags, local.golden_defaults.job_tags))
+  deployment_timeout = try(local.golden_templates[each.key].deployment_timeout, try(local.golden_defaults.deployment_timeout, null))
+  trigger            = local.golden_trigger[each.key]
+  devices            = { for device, variables in each.value : device => { variables = length(variables) == 0 ? null : variables } }
+
+  depends_on = [
+    crosswork_golden_config_jobs.job_8
   ]
 }

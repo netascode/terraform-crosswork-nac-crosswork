@@ -68,7 +68,7 @@ resource "crosswork_srte_odn_templates" "odn_template" {
   depends_on = [
     crosswork_network_devices.network_device,
     crosswork_assign_devices_to_data_gateway.gateway,
-    crosswork_golden_config_jobs.job
+    crosswork_golden_config_jobs.job_9
   ]
 }
 
@@ -174,7 +174,7 @@ resource "crosswork_srte_policies" "policy" {
   depends_on = [
     crosswork_network_devices.network_device,
     crosswork_assign_devices_to_data_gateway.gateway,
-    crosswork_golden_config_jobs.job,
+    crosswork_golden_config_jobs.job_9,
     crosswork_srte_sid_lists.sid_list
   ]
 }

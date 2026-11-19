@@ -192,7 +192,7 @@ terraform plan
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_golden_configuration_directories"></a> [golden\_configuration\_directories](#input\_golden\_configuration\_directories) | List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template. | `list(string)` | `[]` | no |
+| <a name="input_golden_configuration_directories"></a> [golden\_configuration\_directories](#input\_golden\_configuration\_directories) | List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template, in the directory or any subfolder. | `list(string)` | `[]` | no |
 | <a name="input_instance"></a> [instance](#input\_instance) | Name of the provider instance (controller) the resources are created on. Leave it unset to use the default instance. | `string` | `null` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |
@@ -246,7 +246,16 @@ terraform plan
 | [crosswork_file_servers.file_servers](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/file_servers) | resource |
 | [crosswork_gnmi_settings.gnmi](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/gnmi_settings) | resource |
 | [crosswork_golden_config_global_variables.global_variable](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_global_variables) | resource |
-| [crosswork_golden_config_jobs.job](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_0](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_1](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_2](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_3](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_4](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_5](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_6](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_7](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_8](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
+| [crosswork_golden_config_jobs.job_9](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_jobs) | resource |
 | [crosswork_golden_config_templates.template](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_templates) | resource |
 | [crosswork_health_settings.health_settings](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/health_settings) | resource |
 | [crosswork_l2vpn_etag_sets.etag_set](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/l2vpn_etag_sets) | resource |

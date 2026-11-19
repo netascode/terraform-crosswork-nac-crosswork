@@ -198,7 +198,7 @@ resource "crosswork_l3vpn_vpn_services" "vpn_service" {
     crosswork_l3vpn_route_policies.routing_policy,
     crosswork_l3vpn_qos_profile_ids.qos_profile,
     crosswork_resource_pools.resource_pool,
-    crosswork_golden_config_jobs.job,
+    crosswork_golden_config_jobs.job_9,
     crosswork_srte_policies.policy,
     crosswork_srte_odn_templates.odn_template
   ]
