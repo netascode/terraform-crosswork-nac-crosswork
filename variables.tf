@@ -29,7 +29,18 @@ variable "write_default_values_file" {
 }
 
 variable "golden_configuration_directories" {
-  description = "List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template, in the directory or any subfolder."
+  description = "List of paths to directories with the Golden Configuration template files (`.j2`); the files in the directory and in its subfolders can be used by a template."
   type        = list(string)
   default     = []
+}
+
+variable "golden_configuration_files" {
+  description = "List of paths to Golden Configuration template files (`.j2`) that a template can use."
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = alltrue([for path in var.golden_configuration_files : endswith(path, ".j2")])
+    error_message = "Every entry of `golden_configuration_files` must be the path of a file ending in .j2."
+  }
 }

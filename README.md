@@ -192,7 +192,8 @@ terraform plan
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_golden_configuration_directories"></a> [golden\_configuration\_directories](#input\_golden\_configuration\_directories) | List of paths to directories with the Golden Configuration template bodies, one `<template name>.j2` file per template, in the directory or any subfolder. | `list(string)` | `[]` | no |
+| <a name="input_golden_configuration_directories"></a> [golden\_configuration\_directories](#input\_golden\_configuration\_directories) | List of paths to directories with the Golden Configuration template files (`.j2`); the files in the directory and in its subfolders can be used by a template. | `list(string)` | `[]` | no |
+| <a name="input_golden_configuration_files"></a> [golden\_configuration\_files](#input\_golden\_configuration\_files) | List of paths to Golden Configuration template files (`.j2`) that a template can use. | `list(string)` | `[]` | no |
 | <a name="input_instance"></a> [instance](#input\_instance) | Name of the provider instance (controller) the resources are created on. Leave it unset to use the default instance. | `string` | `null` | no |
 | <a name="input_model"></a> [model](#input\_model) | As an alternative to YAML files, a native Terraform data structure can be provided as well. | `map(any)` | `{}` | no |
 | <a name="input_write_default_values_file"></a> [write\_default\_values\_file](#input\_write\_default\_values\_file) | Write all default values to a YAML file. Value is a path pointing to the file to be created. | `string` | `""` | no |

@@ -6,17 +6,22 @@ locals {
   golden_global_variables = { for variable in try(local.golden_configuration.global_variables, []) : variable.name => variable }
   golden_templates        = { for template in try(local.golden_configuration.templates, []) : template.name => template }
 
-  # The body of a template is the file <template name>.j2 anywhere under one of the listed directories (subfolders
-  # included; the folder is not part of the name, so a name must be unique across all of them). The module reads it with
-  # file(), never templatefile(): Terraform does not render it, the controller does. A CRLF line ending becomes LF.
-  golden_body_files = flatten([
-    for directory in var.golden_configuration_directories : [
-      for path in fileset(".", "${directory}/**/*.j2") : { name = trimsuffix(basename(path), ".j2"), path = path }
-    ]
-  ])
-  golden_body_paths = { for file in local.golden_body_files : file.name => file.path... }
+  # The files a template can use: every .j2 file in the listed directories (subfolders included) and the listed files,
+  # by their normalized path, so `./data/a.j2` and `data/a.j2` are the same file. A template names its file with `file`.
+  # The module reads it with file(), never templatefile(): Terraform does not render it, the controller does. A CRLF
+  # line ending becomes LF.
+  golden_files = merge(
+    merge([
+      for directory in var.golden_configuration_directories : {
+        for path in fileset(".", "${directory}/**/*.j2") : abspath(path) => path
+      }
+    ]...),
+    { for path in var.golden_configuration_files : abspath(path) => path }
+  )
+  golden_template_files = { for name, template in local.golden_templates : name => try(template.file, null) }
   golden_bodies = {
-    for name, paths in local.golden_body_paths : name => replace(file(paths[0]), "\r\n", "\n")
+    for name, path in local.golden_template_files : name => replace(file(local.golden_files[abspath(path)]), "\r\n", "\n")
+    if path != null && contains(keys(local.golden_files), abspath(path))
   }
 
   # Values are sent as text (a map as JSON). A secret (with a version) goes write-only, so it stays out of the plan and
@@ -88,12 +93,12 @@ locals {
 resource "terraform_data" "golden_configuration_validation" {
   lifecycle {
     precondition {
-      condition     = alltrue([for name, template in local.golden_templates : contains(keys(local.golden_body_paths), name)])
-      error_message = "A Golden Configuration template has no body file. Put <template name>.j2 in a directory of `golden_configuration_directories`: ${join(", ", [for name, template in local.golden_templates : name if !contains(keys(local.golden_body_paths), name)])}"
+      condition     = alltrue([for name, path in local.golden_template_files : path != null])
+      error_message = "A Golden Configuration template has no `file`. Set `file` to the path of its Jinja template (.j2): ${join(", ", [for name, path in local.golden_template_files : name if path == null])}"
     }
     precondition {
-      condition     = alltrue([for name, paths in local.golden_body_paths : length(paths) == 1])
-      error_message = "A Golden Configuration template has more than one body file: ${join(", ", flatten([for name, paths in local.golden_body_paths : paths if length(paths) > 1]))}"
+      condition     = alltrue([for name, path in local.golden_template_files : path == null || contains(keys(local.golden_files), abspath(path))])
+      error_message = "The `file` of a Golden Configuration template was not found. List its folder in `golden_configuration_directories` or the file in `golden_configuration_files`: ${join(", ", [for name, path in local.golden_template_files : "${name} (${path})" if path != null && !contains(keys(local.golden_files), abspath(path))])}"
     }
   }
 }
