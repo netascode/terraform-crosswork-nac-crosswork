@@ -42,6 +42,7 @@ defaults:
         vendor: Cisco Systems
         software_type: IOS XR
         global_schedule_audit: true
+        order: 0
         mop: Default Golden Config - Cisco
         parallel_execution: 1
         deployment_timeout: 900
