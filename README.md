@@ -209,6 +209,12 @@ terraform plan
 
 | Name | Type |
 | ---- | ---- |
+| [crosswork_aaa_ldap_servers.ldap](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_ldap_servers) | resource |
+| [crosswork_aaa_password_policy.password](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_password_policy) | resource |
+| [crosswork_aaa_radius_servers.radius](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_radius_servers) | resource |
+| [crosswork_aaa_session_settings.session](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_session_settings) | resource |
+| [crosswork_aaa_sso_services.sso](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_sso_services) | resource |
+| [crosswork_aaa_tacacs_servers.tacacs](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_tacacs_servers) | resource |
 | [crosswork_alarm_settings.alarm_settings](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/alarm_settings) | resource |
 | [crosswork_assign_devices_to_access_group.assignment](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_access_group) | resource |
 | [crosswork_assign_devices_to_data_gateway.gateway](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_data_gateway) | resource |
@@ -299,6 +305,7 @@ terraform plan
 | [crosswork_trap_destination.trap](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/trap_destination) | resource |
 | [crosswork_users.user](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/users) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [terraform_data.aaa_validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.golden_configuration_validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [crosswork_data_gateway_instances.instance](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/data-sources/data_gateway_instances) | data source |

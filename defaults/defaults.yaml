@@ -4,6 +4,42 @@ defaults:
     administration:
       users:
         locked: false
+    aaa:
+      tacacs_servers:
+        port: 49
+        secret_format: ascii
+        retries: 0
+        auth_type: pap
+        device_access_group_attribute: deviceAccessGroups
+      radius_servers:
+        port: 1645
+        secret_format: ascii
+        retries: 0
+        auth_type: pap
+        device_access_group_attribute: deviceAccessGroups
+      ldap_servers:
+        user_filter: uid={user}
+        connect_timeout: 5
+        device_access_group_attribute: deviceAccessGroups
+      session_settings:
+        fallback: no-response-or-authentication-failure
+        idle_timeout: 30m
+        parallel_sessions: 100
+        parallel_sessions_per_user: 100
+        source_ip_auditing: false
+      password_policies:
+        min_length: 8
+        no_username: true
+        no_cisco_variant: true
+        no_char_repetition: true
+        change_on_first_login: true
+        min_changed_characters: 1
+        password_reuse_limit: 5
+        password_reuse_days: 15
+        lockout_attempts: 5
+        lockout_minutes: 6
+        expiry_days: 60
+        expiry_warning_days: 15
     services:
       l2vpn:
         vpn_services:
