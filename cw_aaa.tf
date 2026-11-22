@@ -16,11 +16,7 @@ locals {
   }
 }
 
-# Ordering only. The four AAA writers below (TACACS+, RADIUS, LDAP and SSO) make Crosswork restart its authentication
-# service, so they run after every other resource of the apply and, on a destroy, before every other resource. A new
-# crosswork_* resource anywhere in this module must be added to this list, with the four writers as the only
-# exceptions, and create_before_destroy is not allowed on any resource of the module. This node has no input, no
-# triggers and no provisioner. Note: terraform destroy -target of any resource in this list also destroys the writers.
+# Ordering for AAA servers/SSO Crosswork auth restart behavior
 resource "terraform_data" "aaa_changes" {
   depends_on = [
     crosswork_aaa_password_policy.password,
@@ -196,7 +192,6 @@ resource "crosswork_aaa_ldap_servers" "ldap" {
   depends_on = [terraform_data.aaa_changes]
 }
 
-# The metadata files are read from the folder Terraform runs in, so the check is here and not in a rule.
 resource "terraform_data" "aaa_validation" {
   count = try(local.crosswork.aaa.sso_services, null) != null ? 1 : 0
 
