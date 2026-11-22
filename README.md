@@ -305,6 +305,7 @@ terraform plan
 | [crosswork_trap_destination.trap](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/trap_destination) | resource |
 | [crosswork_users.user](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/users) | resource |
 | [local_sensitive_file.defaults](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [terraform_data.aaa_changes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.aaa_validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.golden_configuration_validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |

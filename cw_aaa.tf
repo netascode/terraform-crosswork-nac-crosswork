@@ -16,6 +16,107 @@ locals {
   }
 }
 
+# Ordering only. The four AAA writers below (TACACS+, RADIUS, LDAP and SSO) make Crosswork restart its authentication
+# service, so they run after every other resource of the apply and, on a destroy, before every other resource. A new
+# crosswork_* resource anywhere in this module must be added to this list, with the four writers as the only
+# exceptions, and create_before_destroy is not allowed on any resource of the module. This node has no input, no
+# triggers and no provisioner. Note: terraform destroy -target of any resource in this list also destroys the writers.
+resource "terraform_data" "aaa_changes" {
+  depends_on = [
+    crosswork_aaa_password_policy.password,
+    crosswork_aaa_session_settings.session,
+    crosswork_alarm_settings.alarm_settings,
+    crosswork_assign_devices_to_access_group.assignment,
+    crosswork_assign_devices_to_data_gateway.gateway,
+    crosswork_assign_devices_to_device_group.assignment,
+    crosswork_assign_ports_to_port_group.assignment,
+    crosswork_backup_destination.backup_destination,
+    crosswork_collection_jobs.collection_job,
+    crosswork_collection_jobs_cadence.cadence,
+    crosswork_credential_profiles.credential_profile,
+    crosswork_data_gateway_destinations.destination,
+    crosswork_data_gateway_global_parameters.global_parameters,
+    crosswork_data_gateway_pools.pool,
+    crosswork_data_gateway_resource_configuration.resource_configurations,
+    crosswork_data_retention_device_performance.device_performance,
+    crosswork_data_retention_network_performance.network_performance,
+    crosswork_device_access_groups.level_1,
+    crosswork_device_access_groups.level_10,
+    crosswork_device_access_groups.level_2,
+    crosswork_device_access_groups.level_3,
+    crosswork_device_access_groups.level_4,
+    crosswork_device_access_groups.level_5,
+    crosswork_device_access_groups.level_6,
+    crosswork_device_access_groups.level_7,
+    crosswork_device_access_groups.level_8,
+    crosswork_device_access_groups.level_9,
+    crosswork_device_groups.level_1,
+    crosswork_device_groups.level_10,
+    crosswork_device_groups.level_2,
+    crosswork_device_groups.level_3,
+    crosswork_device_groups.level_4,
+    crosswork_device_groups.level_5,
+    crosswork_device_groups.level_6,
+    crosswork_device_groups.level_7,
+    crosswork_device_groups.level_8,
+    crosswork_device_groups.level_9,
+    crosswork_file_servers.file_servers,
+    crosswork_gnmi_settings.gnmi,
+    crosswork_golden_config_global_variables.global_variable,
+    crosswork_golden_config_jobs.job_0,
+    crosswork_golden_config_jobs.job_1,
+    crosswork_golden_config_jobs.job_2,
+    crosswork_golden_config_jobs.job_3,
+    crosswork_golden_config_jobs.job_4,
+    crosswork_golden_config_jobs.job_5,
+    crosswork_golden_config_jobs.job_6,
+    crosswork_golden_config_jobs.job_7,
+    crosswork_golden_config_jobs.job_8,
+    crosswork_golden_config_jobs.job_9,
+    crosswork_golden_config_templates.template,
+    crosswork_health_settings.health_settings,
+    crosswork_l2vpn_etag_sets.etag_set,
+    crosswork_l2vpn_evpn_route_type_sets.evpn_route_type_set,
+    crosswork_l2vpn_id_pools.id_pools,
+    crosswork_l2vpn_qos_profile_ids.qos_profile,
+    crosswork_l2vpn_rd_sets.rd_set,
+    crosswork_l2vpn_route_policies.routing_policy,
+    crosswork_l2vpn_tag_sets.tag_set,
+    crosswork_l2vpn_vpn_services.vpn_service,
+    crosswork_l2vpn_y1731_profiles.y1731_profile,
+    crosswork_l3vpn_destination_prefix_sets.destination_prefix_set,
+    crosswork_l3vpn_qos_profile_ids.qos_profile,
+    crosswork_l3vpn_route_policies.routing_policy,
+    crosswork_l3vpn_source_prefix_sets.source_prefix_set,
+    crosswork_l3vpn_tag_sets.tag_set,
+    crosswork_l3vpn_vpn_services.vpn_service,
+    crosswork_lock_users.lock_user,
+    crosswork_login_banner.login_banner,
+    crosswork_metric_thresholds.metric_thresholds,
+    crosswork_network_devices.network_device,
+    crosswork_port_groups.port_group,
+    crosswork_port_groups_rules.rule,
+    crosswork_provider_nso_policies.nso_policy,
+    crosswork_provider_profiles.provider_profile,
+    crosswork_resource_pools.resource_pool,
+    crosswork_roles.role,
+    crosswork_smart_licensing_transport.smart_licensing,
+    crosswork_srte_odn_templates.odn_template,
+    crosswork_srte_policies.policy,
+    crosswork_srte_sid_lists.sid_list,
+    crosswork_static_route.static_route,
+    crosswork_survey_settings.survey,
+    crosswork_syslog_destination.syslog,
+    crosswork_tags.tag,
+    crosswork_te_flex_algo_affinity.te_flex_algo_affinity,
+    crosswork_te_general_settings.te_general_settings,
+    crosswork_te_link_affinity.te_link_affinity,
+    crosswork_topology_discovery_settings.discovery,
+    crosswork_trap_destination.trap,
+    crosswork_users.user,
+  ]
+}
+
 resource "crosswork_aaa_tacacs_servers" "tacacs" {
   count    = try(local.crosswork.aaa.tacacs_servers, null) != null ? 1 : 0
   instance = var.instance
@@ -35,6 +136,8 @@ resource "crosswork_aaa_tacacs_servers" "tacacs" {
     policy_id          = try(server.policy_id, null)
     virtual_domain     = try(server.device_access_group_attribute, local.defaults.crosswork.aaa.tacacs_servers.device_access_group_attribute, null)
   }]
+
+  depends_on = [terraform_data.aaa_changes]
 }
 
 resource "crosswork_aaa_radius_servers" "radius" {
@@ -54,6 +157,8 @@ resource "crosswork_aaa_radius_servers" "radius" {
     policy_id          = try(server.policy_id, null)
     virtual_domain     = try(server.device_access_group_attribute, local.defaults.crosswork.aaa.radius_servers.device_access_group_attribute, null)
   }]
+
+  depends_on = [terraform_data.aaa_changes]
 }
 
 # One LDAP server of the model is two entries of the API: the login (servers) and the lookup of the role (attribute_servers).
@@ -87,6 +192,8 @@ resource "crosswork_aaa_ldap_servers" "ldap" {
     fail_fast                  = false
     attributes                 = { (server.policy_id) = "policy_id" }
   }]
+
+  depends_on = [terraform_data.aaa_changes]
 }
 
 # The metadata files are read from the folder Terraform runs in, so the check is here and not in a rule.
@@ -111,7 +218,7 @@ resource "crosswork_aaa_sso_services" "sso" {
     metadata_location = basename(service.metadata_file)
   }]
 
-  depends_on = [terraform_data.aaa_validation]
+  depends_on = [terraform_data.aaa_validation, terraform_data.aaa_changes]
 }
 
 ### AAA SETTINGS ###
