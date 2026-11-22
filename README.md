@@ -284,6 +284,7 @@ terraform plan
 | [crosswork_login_banner.login_banner](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/login_banner) | resource |
 | [crosswork_metric_thresholds.metric_thresholds](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/metric_thresholds) | resource |
 | [crosswork_network_devices.network_device](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/network_devices) | resource |
+| [crosswork_performance_policies.policy](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/performance_policies) | resource |
 | [crosswork_port_groups.port_group](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/port_groups) | resource |
 | [crosswork_port_groups_rules.rule](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/port_groups_rules) | resource |
 | [crosswork_provider_nso_policies.nso_policy](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/provider_nso_policies) | resource |
