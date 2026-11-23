@@ -170,10 +170,10 @@ resource "crosswork_data_retention_device_performance" "device_performance" {
   instance = var.instance
   # The model gives days and weeks, the controller wants hours.
   rows = { for row in local.system_settings.data_retention.device_performance : local.retention_device_keys[row.name] => {
-    raw_hours    = try(row.raw_hours, local.system_settings_defaults.data_retention.device_performance.raw_hours)
-    hourly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.hourly_days, local.system_settings_defaults.data_retention.device_performance.hourly_days) * 24
-    daily_hours  = contains(local.retention_raw_only, row.name) ? 0 : try(row.daily_days, local.system_settings_defaults.data_retention.device_performance.daily_days) * 24
-    weekly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.weekly_weeks, local.system_settings_defaults.data_retention.device_performance.weekly_weeks) * 168
+    raw_hours    = try(row.raw_retention_hours, local.system_settings_defaults.data_retention.device_performance.raw_retention_hours)
+    hourly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.hourly_retention_days, local.system_settings_defaults.data_retention.device_performance.hourly_retention_days) * 24
+    daily_hours  = contains(local.retention_raw_only, row.name) ? 0 : try(row.daily_retention_days, local.system_settings_defaults.data_retention.device_performance.daily_retention_days) * 24
+    weekly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.weekly_retention_weeks, local.system_settings_defaults.data_retention.device_performance.weekly_retention_weeks) * 168
   } }
 }
 
@@ -185,10 +185,10 @@ resource "crosswork_data_retention_network_performance" "network_performance" {
   collect_lsp_utilization  = try(local.system_settings.data_retention.network_performance.collect_lsp_utilization, local.system_settings_defaults.data_retention.network_performance.collect_lsp_utilization, null)
   collect_lsp_pm           = try(local.system_settings.data_retention.network_performance.collect_lsp_pm, local.system_settings_defaults.data_retention.network_performance.collect_lsp_pm, null)
   collect_link_pm          = try(local.system_settings.data_retention.network_performance.collect_link_pm, local.system_settings_defaults.data_retention.network_performance.collect_link_pm, null)
-  raw_hours                = try(local.system_settings.data_retention.network_performance.raw_hours, local.system_settings_defaults.data_retention.network_performance.raw_hours, null)
-  hourly_days              = try(local.system_settings.data_retention.network_performance.hourly_days, local.system_settings_defaults.data_retention.network_performance.hourly_days, null)
-  daily_days               = try(local.system_settings.data_retention.network_performance.daily_days, local.system_settings_defaults.data_retention.network_performance.daily_days, null)
-  weekly_weeks             = try(local.system_settings.data_retention.network_performance.weekly_weeks, local.system_settings_defaults.data_retention.network_performance.weekly_weeks, null)
+  raw_hours                = try(local.system_settings.data_retention.network_performance.raw_retention_hours, local.system_settings_defaults.data_retention.network_performance.raw_retention_hours, null)
+  hourly_days              = try(local.system_settings.data_retention.network_performance.hourly_retention_days, local.system_settings_defaults.data_retention.network_performance.hourly_retention_days, null)
+  daily_days               = try(local.system_settings.data_retention.network_performance.daily_retention_days, local.system_settings_defaults.data_retention.network_performance.daily_retention_days, null)
+  weekly_weeks             = try(local.system_settings.data_retention.network_performance.weekly_retention_weeks, local.system_settings_defaults.data_retention.network_performance.weekly_retention_weeks, null)
 }
 
 resource "crosswork_health_settings" "health_settings" {

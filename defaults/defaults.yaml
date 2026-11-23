@@ -106,20 +106,20 @@ defaults:
         mode: direct
       data_retention:
         device_performance:
-          raw_hours: 24
-          hourly_days: 7
-          daily_days: 31
-          weekly_weeks: 54
+          raw_retention_hours: 24
+          hourly_retention_days: 7
+          daily_retention_days: 31
+          weekly_retention_weeks: 54
         network_performance:
           collect_lsp_state_change: true
           collect_lsp_path_change: true
           collect_lsp_utilization: true
           collect_lsp_pm: false
           collect_link_pm: false
-          raw_hours: 24
-          hourly_days: 7
-          daily_days: 31
-          weekly_weeks: 52
+          raw_retention_hours: 24
+          hourly_retention_days: 7
+          daily_retention_days: 31
+          weekly_retention_weeks: 52
       performance_monitoring:
         health_settings:
           optical_zrp:
