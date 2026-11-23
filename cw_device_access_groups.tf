@@ -9,16 +9,16 @@ locals {
   device_access_group_root      = try([for group in local.builtin_device_access_groups : group.id if group.subgroups_allowed][0], null)
 
   # The model is a tree, one resource for each level. Names are unique across the whole tree, so a name is the key.
-  device_access_groups_level_1  = [for group in local.device_access_groups : { name = group.name, description = try(group.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = null, groups = try(group.groups, []), devices = try(group.devices, []) }]
-  device_access_groups_level_2  = flatten([for group in local.device_access_groups_level_1 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_3  = flatten([for group in local.device_access_groups_level_2 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_4  = flatten([for group in local.device_access_groups_level_3 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_5  = flatten([for group in local.device_access_groups_level_4 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_6  = flatten([for group in local.device_access_groups_level_5 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_7  = flatten([for group in local.device_access_groups_level_6 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_8  = flatten([for group in local.device_access_groups_level_7 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_9  = flatten([for group in local.device_access_groups_level_8 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
-  device_access_groups_level_10 = flatten([for group in local.device_access_groups_level_9 : [for child in group.groups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, groups = try(child.groups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_1  = [for group in local.device_access_groups : { name = group.name, description = try(group.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = null, subgroups = try(group.subgroups, []), devices = try(group.devices, []) }]
+  device_access_groups_level_2  = flatten([for group in local.device_access_groups_level_1 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_3  = flatten([for group in local.device_access_groups_level_2 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_4  = flatten([for group in local.device_access_groups_level_3 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_5  = flatten([for group in local.device_access_groups_level_4 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_6  = flatten([for group in local.device_access_groups_level_5 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_7  = flatten([for group in local.device_access_groups_level_6 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_8  = flatten([for group in local.device_access_groups_level_7 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_9  = flatten([for group in local.device_access_groups_level_8 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_access_groups_level_10 = flatten([for group in local.device_access_groups_level_9 : [for child in group.subgroups : { name = child.name, description = try(child.description, local.defaults.crosswork.administration.device_access_groups.description, null), parent = group.name, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
 
   # The groups that list devices, at any level. A name is the key, as it is unique across the whole tree.
   device_access_group_devices = merge([
@@ -30,7 +30,6 @@ locals {
     ] : { for group in level : group.name => group.devices if length(group.devices) > 0 }
   ]...)
 
-  # Users name a group declared in the model (at any level) or a built-in group
   device_access_group_ids = merge(
     { for group in local.builtin_device_access_groups : group.name => group.id },
     { for name, group in crosswork_device_access_groups.level_1 : name => group.id },
@@ -46,8 +45,7 @@ locals {
   )
 }
 
-# Read only when the model has groups or users, so a model without them needs no cluster at plan time.
-# It gives the root group.
+# Read only when the model has groups or users, It gives the root group.
 data "crosswork_groupings" "device_access" {
   count      = length(local.device_access_groups) + length(local.users) > 0 ? 1 : 0
   instance   = var.instance
@@ -141,15 +139,12 @@ resource "crosswork_device_access_groups" "level_10" {
   parent_uuid = crosswork_device_access_groups.level_9[each.value.parent].id
 }
 
-# The devices of a group. The assignment is created after the group and the devices and deleted before them, because
-# Crosswork copies a device into a group.
 resource "crosswork_assign_devices_to_access_group" "assignment" {
   for_each = local.device_access_group_devices
   instance = var.instance
   group_id = local.device_access_group_ids[each.key]
   devices  = [for device in each.value : crosswork_network_devices.network_device[device].id]
 
-  # A device is copied from the device group that holds it. The copies wait for the device group moves, so a device is
-  # never searched for while it is on its way; on a destroy the copies go first.
+  # A device is copied from the device group that holds it. The copies wait for the device group moves
   depends_on = [crosswork_assign_devices_to_device_group.assignment]
 }
