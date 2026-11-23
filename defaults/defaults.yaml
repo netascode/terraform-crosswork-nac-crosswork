@@ -71,6 +71,13 @@ defaults:
           show_clock:
             hours: 0
             minutes: 30
+    device_management:
+      performance_policies:
+        active: true
+        metrics:
+          thresholds:
+            conditions:
+              type: alarm
     golden_configuration:
       templates:
         mode: merge
@@ -121,9 +128,9 @@ defaults:
         metric_thresholds:
           unit: ms
         discovery:
-          lldp: true
-          cdp: true
-          lag: true
+          lldp: false
+          cdp: false
+          lag: false
       traffic_engineering:
         general_settings:
           policy_unused_threshold_kbps: 1000
