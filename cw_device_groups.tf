@@ -1,25 +1,19 @@
-### DEVICE GROUPS ###
+### DEVICE GROUPS SHARED ###
 
 locals {
   device_groups = try(local.crosswork.device_management.device_groups, [])
-
-  # The anchor is the built-in group that allows subgroups (All Locations), not the group without a parent: the Location
-  # root refuses children.
+  # The anchor is the built-in group that allows subgroups (All Locations), not the group without a parent: the Location root refuses children.
   existing_device_groups = try(data.crosswork_groupings.device[0].items, [])
-  device_group_anchor    = try([for group in local.existing_device_groups : group.id if group.discovery_type == "StaticSystem" && group.subgroups_allowed][0], null)
-
   device_groups_level_1  = [for group in local.device_groups : { key = replace(replace(group.name, "%", "%25"), "/", "%2F"), name = group.name, description = try(group.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = null, subgroups = try(group.subgroups, []), devices = try(group.devices, []) }]
-  device_groups_level_2  = flatten([for group in local.device_groups_level_1 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_3  = flatten([for group in local.device_groups_level_2 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_4  = flatten([for group in local.device_groups_level_3 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_5  = flatten([for group in local.device_groups_level_4 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_6  = flatten([for group in local.device_groups_level_5 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_7  = flatten([for group in local.device_groups_level_6 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_8  = flatten([for group in local.device_groups_level_7 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_9  = flatten([for group in local.device_groups_level_8 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-  device_groups_level_10 = flatten([for group in local.device_groups_level_9 : [for child in group.subgroups : { key = "${group.key}/${replace(replace(child.name, "%", "%25"), "/", "%2F")}", name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
-
-  # The ids of the groups of the model, by key, and the groups that list devices, at any level.
+  device_groups_level_2  = flatten([for group in local.device_groups_level_1 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_3  = flatten([for group in local.device_groups_level_2 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_4  = flatten([for group in local.device_groups_level_3 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_5  = flatten([for group in local.device_groups_level_4 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_6  = flatten([for group in local.device_groups_level_5 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_7  = flatten([for group in local.device_groups_level_6 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_8  = flatten([for group in local.device_groups_level_7 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_9  = flatten([for group in local.device_groups_level_8 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
+  device_groups_level_10 = flatten([for group in local.device_groups_level_9 : [for child in group.subgroups : { key = format("%s/%s", group.key, replace(replace(child.name, "%", "%25"), "/", "%2F")), name = child.name, description = try(child.description, local.defaults.crosswork.device_management.device_groups.description, null), parent = group.key, subgroups = try(child.subgroups, []), devices = try(child.devices, []) }]])
   device_group_ids = merge(
     { for key, group in crosswork_device_groups.level_1 : key => group.id },
     { for key, group in crosswork_device_groups.level_2 : key => group.id },
@@ -32,14 +26,12 @@ locals {
     { for key, group in crosswork_device_groups.level_9 : key => group.id },
     { for key, group in crosswork_device_groups.level_10 : key => group.id },
   )
-  device_group_devices = merge([
-    for level in [
-      local.device_groups_level_1, local.device_groups_level_2, local.device_groups_level_3,
-      local.device_groups_level_4, local.device_groups_level_5, local.device_groups_level_6,
-      local.device_groups_level_7, local.device_groups_level_8, local.device_groups_level_9,
-      local.device_groups_level_10,
-    ] : { for group in level : group.key => group.devices if length(group.devices) > 0 }
-  ]...)
+}
+
+### DEVICE GROUPS ###
+
+locals {
+  device_group_anchor = try([for group in local.existing_device_groups : group.id if group.discovery_type == "StaticSystem" && group.subgroups_allowed][0], null)
 }
 
 # Read only when the model has groups/device notification policy/suppression policy.
@@ -134,6 +126,19 @@ resource "crosswork_device_groups" "level_10" {
   name        = each.value.name
   description = each.value.description
   parent_uuid = crosswork_device_groups.level_9[each.value.parent].id
+}
+
+### DEVICE GROUP DEVICES ###
+
+locals {
+  device_group_devices = merge([
+    for level in [
+      local.device_groups_level_1, local.device_groups_level_2, local.device_groups_level_3,
+      local.device_groups_level_4, local.device_groups_level_5, local.device_groups_level_6,
+      local.device_groups_level_7, local.device_groups_level_8, local.device_groups_level_9,
+      local.device_groups_level_10,
+    ] : { for group in level : group.key => group.devices if length(group.devices) > 0 }
+  ]...)
 }
 
 # The devices of a group. A device is in one device group at a time, so listing it moves it out of its old group

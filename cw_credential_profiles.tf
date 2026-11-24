@@ -1,3 +1,5 @@
+### CREDENTIAL PROFILES ###
+
 locals {
   credential_types = {
     SSH     = "ROBOT_USERPASS_SSH"

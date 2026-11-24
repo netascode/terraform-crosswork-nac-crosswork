@@ -1,19 +1,6 @@
-### AAA ###
+### AAA SHARED ###
 
 locals {
-  aaa_fallbacks = {
-    "never"                                 = "NO_FALLBACK"
-    "no-response"                           = "FB_ON_NO_RESPONSE"
-    "no-response-or-authentication-failure" = "FB_ON_NORESP_AUTH_FAILURE"
-  }
-  aaa_idle_timeouts = {
-    "10m" = 10
-    "15m" = 15
-    "30m" = 30
-    "1h"  = 60
-    "2h"  = 120
-    "8h"  = 480
-  }
 }
 
 # Ordering for AAA servers/SSO Crosswork auth restart behavior
@@ -114,6 +101,8 @@ resource "terraform_data" "aaa_changes" {
   ]
 }
 
+### AAA TACACS SERVERS ###
+
 resource "crosswork_aaa_tacacs_servers" "tacacs" {
   count    = try(local.crosswork.aaa.tacacs_servers, null) != null ? 1 : 0
   instance = var.instance
@@ -137,6 +126,8 @@ resource "crosswork_aaa_tacacs_servers" "tacacs" {
   depends_on = [terraform_data.aaa_changes]
 }
 
+### AAA RADIUS SERVERS ###
+
 resource "crosswork_aaa_radius_servers" "radius" {
   count    = try(local.crosswork.aaa.radius_servers, null) != null ? 1 : 0
   instance = var.instance
@@ -157,6 +148,8 @@ resource "crosswork_aaa_radius_servers" "radius" {
 
   depends_on = [terraform_data.aaa_changes]
 }
+
+### AAA LDAP SERVERS ###
 
 # One LDAP server of the model is two entries of the API: the login (servers) and the lookup of the role (attribute_servers).
 resource "crosswork_aaa_ldap_servers" "ldap" {
@@ -193,6 +186,8 @@ resource "crosswork_aaa_ldap_servers" "ldap" {
   depends_on = [terraform_data.aaa_changes]
 }
 
+### AAA SSO SERVICES ###
+
 resource "terraform_data" "aaa_validation" {
   count = try(local.crosswork.aaa.sso_services, null) != null ? 1 : 0
 
@@ -219,6 +214,23 @@ resource "crosswork_aaa_sso_services" "sso" {
 
 ### AAA SETTINGS ###
 
+locals {
+  aaa_fallbacks = {
+    "never"                                 = "NO_FALLBACK"
+    "no-response"                           = "FB_ON_NO_RESPONSE"
+    "no-response-or-authentication-failure" = "FB_ON_NORESP_AUTH_FAILURE"
+  }
+
+  aaa_idle_timeouts = {
+    "10m" = 10
+    "15m" = 15
+    "30m" = 30
+    "1h"  = 60
+    "2h"  = 120
+    "8h"  = 480
+  }
+}
+
 resource "crosswork_aaa_session_settings" "session" {
   count                      = try(local.crosswork.aaa.session_settings, null) != null ? 1 : 0
   instance                   = var.instance
@@ -228,6 +240,8 @@ resource "crosswork_aaa_session_settings" "session" {
   parallel_sessions_per_user = try(local.crosswork.aaa.session_settings.parallel_sessions_per_user, local.defaults.crosswork.aaa.session_settings.parallel_sessions_per_user, null)
   source_ip_auditing         = try(local.crosswork.aaa.session_settings.source_ip_auditing, local.defaults.crosswork.aaa.session_settings.source_ip_auditing, null)
 }
+
+### AAA PASSWORD POLICY ###
 
 resource "crosswork_aaa_password_policy" "password" {
   count                                = try(local.crosswork.aaa.password_policies, null) != null ? 1 : 0

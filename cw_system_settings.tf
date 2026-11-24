@@ -1,10 +1,74 @@
-### SETTINGS ###
+### SETTINGS SHARED ###
 
 locals {
   system_settings          = try(local.crosswork.system_settings, {})
   system_settings_defaults = local.defaults.crosswork.system_settings
-  smart_licensing_mode     = try(local.system_settings.smart_licensing.mode, local.system_settings_defaults.smart_licensing.mode, "direct")
+}
 
+### LOGIN BANNER ###
+
+resource "crosswork_login_banner" "login_banner" {
+  count        = try(local.system_settings.pre_login_disclaimer, null) != null ? 1 : 0
+  instance     = var.instance
+  show_message = try(local.system_settings.pre_login_disclaimer.enabled, local.system_settings_defaults.pre_login_disclaimer.enabled, null)
+  user_ack     = try(local.system_settings.pre_login_disclaimer.require_acknowledgement, local.system_settings_defaults.pre_login_disclaimer.require_acknowledgement, null)
+  title        = try(local.system_settings.pre_login_disclaimer.title, local.system_settings_defaults.pre_login_disclaimer.title, null)
+  message      = try(local.system_settings.pre_login_disclaimer.message, local.system_settings_defaults.pre_login_disclaimer.message, null)
+  icon         = try("BANNER_ICON_${upper(local.system_settings.pre_login_disclaimer.icon)}", "BANNER_ICON_${upper(local.system_settings_defaults.pre_login_disclaimer.icon)}", null)
+}
+
+### SURVEY ###
+
+resource "crosswork_survey_settings" "survey" {
+  count    = try(local.system_settings.survey, null) != null ? 1 : 0
+  instance = var.instance
+  enabled  = try(local.system_settings.survey.enabled, local.system_settings_defaults.survey.enabled, null)
+}
+
+### FILE SERVERS ###
+
+resource "crosswork_file_servers" "file_servers" {
+  count               = try(local.system_settings.file_servers, null) != null ? 1 : 0
+  instance            = var.instance
+  ftp_enabled         = try(local.system_settings.file_servers.ftp_enabled, local.system_settings_defaults.file_servers.ftp_enabled, null)
+  sftp_upload_enabled = try(local.system_settings.file_servers.sftp_upload_enabled, local.system_settings_defaults.file_servers.sftp_upload_enabled, null)
+}
+
+### SMART LICENSING TRANSPORT ###
+
+locals {
+  smart_licensing_mode = try(local.system_settings.smart_licensing.mode, local.system_settings_defaults.smart_licensing.mode, "direct")
+}
+
+resource "crosswork_smart_licensing_transport" "smart_licensing" {
+  count    = try(local.system_settings.smart_licensing, null) != null ? 1 : 0
+  instance = var.instance
+  # The model has three choices, the controller two modes: the proxy choice is DIRECT with a proxy. The controller keeps
+  # the Cisco URL in direct mode, so only on-prem sends a URL of its own.
+  mode       = local.smart_licensing_mode == "on-prem" ? "ON_PREM" : "DIRECT"
+  url        = local.smart_licensing_mode == "on-prem" ? try(local.system_settings.smart_licensing.url, null) : "https://smartreceiver.cisco.com/licservice/license"
+  proxy_host = local.smart_licensing_mode == "http-gateway" ? try(local.system_settings.smart_licensing.proxy.host, null) : null
+  proxy_port = local.smart_licensing_mode == "http-gateway" ? try(local.system_settings.smart_licensing.proxy.port, null) : null
+}
+
+### BACKUP DESTINATION ###
+
+resource "crosswork_backup_destination" "backup_destination" {
+  count    = try(local.system_settings.backup_and_restore.destination, null) != null ? 1 : 0
+  instance = var.instance
+  # The controller has no delete, so a destroy leaves the destination in place. The password is write-only.
+  host_name           = local.system_settings.backup_and_restore.destination.address
+  port                = local.system_settings.backup_and_restore.destination.port
+  username            = local.system_settings.backup_and_restore.destination.username
+  password            = try(local.system_settings.backup_and_restore.destination.password_version, null) == null ? sensitive(local.system_settings.backup_and_restore.destination.password) : null
+  password_wo         = try(local.system_settings.backup_and_restore.destination.password_version, null) != null ? sensitive(local.system_settings.backup_and_restore.destination.password) : null
+  password_wo_version = try(local.system_settings.backup_and_restore.destination.password_version, null)
+  remote_path         = local.system_settings.backup_and_restore.destination.remote_path
+}
+
+### DATA RETENTION ###
+
+locals {
   # Device performance retention: the model names and the controller keys. ptp, synce and gnss keep raw data only.
   retention_device_keys = {
     lsp_traffic             = "CEPM_SRPOLICY"
@@ -24,7 +88,37 @@ locals {
     srv6_traffic_accounting = "CEPM_SRV6LOCATOR"
   }
   retention_raw_only = ["ptp", "synce", "gnss"]
+}
 
+resource "crosswork_data_retention_device_performance" "device_performance" {
+  count    = try(local.system_settings.data_retention.device_performance, null) != null ? 1 : 0
+  instance = var.instance
+  # The model gives days and weeks, the controller wants hours.
+  rows = { for row in local.system_settings.data_retention.device_performance : local.retention_device_keys[row.name] => {
+    raw_hours    = try(row.raw_retention_hours, local.system_settings_defaults.data_retention.device_performance.raw_retention_hours)
+    hourly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.hourly_retention_days, local.system_settings_defaults.data_retention.device_performance.hourly_retention_days) * 24
+    daily_hours  = contains(local.retention_raw_only, row.name) ? 0 : try(row.daily_retention_days, local.system_settings_defaults.data_retention.device_performance.daily_retention_days) * 24
+    weekly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.weekly_retention_weeks, local.system_settings_defaults.data_retention.device_performance.weekly_retention_weeks) * 168
+  } }
+}
+
+resource "crosswork_data_retention_network_performance" "network_performance" {
+  count                    = try(local.system_settings.data_retention.network_performance, null) != null ? 1 : 0
+  instance                 = var.instance
+  collect_lsp_state_change = try(local.system_settings.data_retention.network_performance.collect_lsp_state_change, local.system_settings_defaults.data_retention.network_performance.collect_lsp_state_change, null)
+  collect_lsp_path_change  = try(local.system_settings.data_retention.network_performance.collect_lsp_path_change, local.system_settings_defaults.data_retention.network_performance.collect_lsp_path_change, null)
+  collect_lsp_utilization  = try(local.system_settings.data_retention.network_performance.collect_lsp_utilization, local.system_settings_defaults.data_retention.network_performance.collect_lsp_utilization, null)
+  collect_lsp_pm           = try(local.system_settings.data_retention.network_performance.collect_lsp_pm, local.system_settings_defaults.data_retention.network_performance.collect_lsp_pm, null)
+  collect_link_pm          = try(local.system_settings.data_retention.network_performance.collect_link_pm, local.system_settings_defaults.data_retention.network_performance.collect_link_pm, null)
+  raw_hours                = try(local.system_settings.data_retention.network_performance.raw_retention_hours, local.system_settings_defaults.data_retention.network_performance.raw_retention_hours, null)
+  hourly_days              = try(local.system_settings.data_retention.network_performance.hourly_retention_days, local.system_settings_defaults.data_retention.network_performance.hourly_retention_days, null)
+  daily_days               = try(local.system_settings.data_retention.network_performance.daily_retention_days, local.system_settings_defaults.data_retention.network_performance.daily_retention_days, null)
+  weekly_weeks             = try(local.system_settings.data_retention.network_performance.weekly_retention_weeks, local.system_settings_defaults.data_retention.network_performance.weekly_retention_weeks, null)
+}
+
+### PERFORMANCE MONITORING ###
+
+locals {
   # Health settings: the model names and the controller keys of the metrics, all tabs.
   health_keys = merge(
     {
@@ -56,7 +150,9 @@ locals {
     { for cos in range(8) : "dropped_traffic_cos_${cos}" => "CEPMQOS_dropBitsPercent_CoS${cos}" },
     { for cos in range(8) : "dropped_packets_cos_${cos}" => "CEPMQOS_dropPktsPercent_CoS${cos}" },
   )
+
   health_levels = ["healthy", "minor", "major", "critical"]
+
   health_units = {
     bps  = "BITS_PER_SECOND"
     kbps = "KBITS_PER_SECOND"
@@ -69,14 +165,21 @@ locals {
     "NULL", "DNU", "DUS", "FAILED", "INV0", "INV1", "INV2", "INV3", "INV4", "INV5", "INV6", "INV7", "INV8", "INV9", "INV10", "INV11", "INV12",
     "INV13", "INV14", "INV15", "NSUPP", "PRC", "PROV", "PRS", "SEC", "SMC", "SSUA", "SSUB", "ST2", "ST3", "ST3E", "ST4", "STU", "TNC", "UNC", "UNK",
   ] : name => index + 1 }
+
   clock_state_numbers = { for index, name in ["freerun", "holdover", "acquiring", "frequency-locked", "phase-aligned"] : name => index + 1 }
 
   # Health rows by controller key, each with the way its levels are written.
-  health_rows = merge([for tab, rows in try(local.system_settings.performance_monitoring.health_settings, {}) : {
-    for row in rows : local.health_keys[row.name] => merge(row, {
-      kind = row.name == "input_quality_level" ? "quality" : (row.name == "clock_state" ? "state" : (row.name == "clock_utc_offset" ? "offset" : "range"))
-    })
-  }]...)
+  health_row_entries = flatten([
+    for tab, rows in try(local.system_settings.performance_monitoring.health_settings, {}) : [
+      for row in rows : merge(row, {
+        key  = local.health_keys[row.name]
+        kind = row.name == "input_quality_level" ? "quality" : (row.name == "clock_state" ? "state" : (row.name == "clock_utc_offset" ? "offset" : "range"))
+      })
+    ]
+  ])
+
+  health_rows = { for row in local.health_row_entries : row.key => row }
+
   # A level of a row is a range (from and to), or for the metrics with values a list of numbers or of the model names.
   health_categories = { for key, row in local.health_rows : key => flatten([
     for level in local.health_levels : [{
@@ -100,95 +203,15 @@ locals {
     jitter                = "Jitter"
     loss                  = "Loss"
   }
+
   # An ordered list: the levels go to the controller in ascending order (a map would sort the keys by name).
   threshold_levels = [{ key = "good", severity = "HEALTHY" }, { key = "warning", severity = "MINOR" }, { key = "severe_warning", severity = "MAJOR" }]
+
   threshold_rows = { for row in try(local.system_settings.topology.metric_thresholds, []) : local.threshold_metrics[row.name] => {
     time   = contains(["delay", "jitter"], row.name)
     factor = contains(["delay", "jitter"], row.name) && try(row.unit, local.system_settings_defaults.topology.metric_thresholds.unit, "ms") == "ms" ? 1000 : 1
     row    = row
   } }
-
-  # Trap receivers: the model values and the controller enums.
-  trap_modes         = { auth-priv = "AuthPriv", auth-no-priv = "AuthNoPriv", no-auth-no-priv = "NoAuthNoPriv" }
-  trap_auth_types    = { hmac-md5 = "HMACMD5", hmac-sha = "HMACSHA" }
-  trap_privacy_types = { none = "NONE", cbc-des = "DES", cfb-aes-128 = "AES128", cfb-aes-192 = "AES192", cfb-aes-192c = "CiscoAES192", cfb-aes-256 = "AES256", cfb-aes-256c = "CiscoAES256" }
-  # GNMI: the flag of each vendor that the model lists.
-  gnmi_flags       = { for vendor in try(local.system_settings.alarms_and_events.gnmi, []) : vendor.name => vendor.enabled }
-  trap_receivers   = { for trap in try(local.system_settings.alarms_and_events.notification_destinations.trap_receivers, []) : try(trap.name, trap.address) => trap }
-  syslog_receivers = { for syslog in try(local.system_settings.alarms_and_events.notification_destinations.syslog_receivers, []) : try(syslog.name, syslog.address) => syslog }
-}
-
-resource "crosswork_login_banner" "login_banner" {
-  count        = try(local.system_settings.pre_login_disclaimer, null) != null ? 1 : 0
-  instance     = var.instance
-  show_message = try(local.system_settings.pre_login_disclaimer.enabled, local.system_settings_defaults.pre_login_disclaimer.enabled, null)
-  user_ack     = try(local.system_settings.pre_login_disclaimer.require_acknowledgement, local.system_settings_defaults.pre_login_disclaimer.require_acknowledgement, null)
-  title        = try(local.system_settings.pre_login_disclaimer.title, local.system_settings_defaults.pre_login_disclaimer.title, null)
-  message      = try(local.system_settings.pre_login_disclaimer.message, local.system_settings_defaults.pre_login_disclaimer.message, null)
-  icon         = try("BANNER_ICON_${upper(local.system_settings.pre_login_disclaimer.icon)}", "BANNER_ICON_${upper(local.system_settings_defaults.pre_login_disclaimer.icon)}", null)
-}
-
-resource "crosswork_survey_settings" "survey" {
-  count    = try(local.system_settings.survey, null) != null ? 1 : 0
-  instance = var.instance
-  enabled  = try(local.system_settings.survey.enabled, local.system_settings_defaults.survey.enabled, null)
-}
-
-resource "crosswork_file_servers" "file_servers" {
-  count               = try(local.system_settings.file_servers, null) != null ? 1 : 0
-  instance            = var.instance
-  ftp_enabled         = try(local.system_settings.file_servers.ftp_enabled, local.system_settings_defaults.file_servers.ftp_enabled, null)
-  sftp_upload_enabled = try(local.system_settings.file_servers.sftp_upload_enabled, local.system_settings_defaults.file_servers.sftp_upload_enabled, null)
-}
-
-resource "crosswork_smart_licensing_transport" "smart_licensing" {
-  count    = try(local.system_settings.smart_licensing, null) != null ? 1 : 0
-  instance = var.instance
-  # The model has three choices, the controller two modes: the proxy choice is DIRECT with a proxy. The controller keeps
-  # the Cisco URL in direct mode, so only on-prem sends a URL of its own.
-  mode       = local.smart_licensing_mode == "on-prem" ? "ON_PREM" : "DIRECT"
-  url        = local.smart_licensing_mode == "on-prem" ? try(local.system_settings.smart_licensing.url, null) : "https://smartreceiver.cisco.com/licservice/license"
-  proxy_host = local.smart_licensing_mode == "http-gateway" ? try(local.system_settings.smart_licensing.proxy.host, null) : null
-  proxy_port = local.smart_licensing_mode == "http-gateway" ? try(local.system_settings.smart_licensing.proxy.port, null) : null
-}
-
-resource "crosswork_backup_destination" "backup_destination" {
-  count    = try(local.system_settings.backup_and_restore.destination, null) != null ? 1 : 0
-  instance = var.instance
-  # The controller has no delete, so a destroy leaves the destination in place. The password is write-only.
-  host_name           = local.system_settings.backup_and_restore.destination.address
-  port                = local.system_settings.backup_and_restore.destination.port
-  username            = local.system_settings.backup_and_restore.destination.username
-  password            = try(local.system_settings.backup_and_restore.destination.password_version, null) == null ? sensitive(local.system_settings.backup_and_restore.destination.password) : null
-  password_wo         = try(local.system_settings.backup_and_restore.destination.password_version, null) != null ? sensitive(local.system_settings.backup_and_restore.destination.password) : null
-  password_wo_version = try(local.system_settings.backup_and_restore.destination.password_version, null)
-  remote_path         = local.system_settings.backup_and_restore.destination.remote_path
-}
-
-resource "crosswork_data_retention_device_performance" "device_performance" {
-  count    = try(local.system_settings.data_retention.device_performance, null) != null ? 1 : 0
-  instance = var.instance
-  # The model gives days and weeks, the controller wants hours.
-  rows = { for row in local.system_settings.data_retention.device_performance : local.retention_device_keys[row.name] => {
-    raw_hours    = try(row.raw_retention_hours, local.system_settings_defaults.data_retention.device_performance.raw_retention_hours)
-    hourly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.hourly_retention_days, local.system_settings_defaults.data_retention.device_performance.hourly_retention_days) * 24
-    daily_hours  = contains(local.retention_raw_only, row.name) ? 0 : try(row.daily_retention_days, local.system_settings_defaults.data_retention.device_performance.daily_retention_days) * 24
-    weekly_hours = contains(local.retention_raw_only, row.name) ? 0 : try(row.weekly_retention_weeks, local.system_settings_defaults.data_retention.device_performance.weekly_retention_weeks) * 168
-  } }
-}
-
-resource "crosswork_data_retention_network_performance" "network_performance" {
-  count                    = try(local.system_settings.data_retention.network_performance, null) != null ? 1 : 0
-  instance                 = var.instance
-  collect_lsp_state_change = try(local.system_settings.data_retention.network_performance.collect_lsp_state_change, local.system_settings_defaults.data_retention.network_performance.collect_lsp_state_change, null)
-  collect_lsp_path_change  = try(local.system_settings.data_retention.network_performance.collect_lsp_path_change, local.system_settings_defaults.data_retention.network_performance.collect_lsp_path_change, null)
-  collect_lsp_utilization  = try(local.system_settings.data_retention.network_performance.collect_lsp_utilization, local.system_settings_defaults.data_retention.network_performance.collect_lsp_utilization, null)
-  collect_lsp_pm           = try(local.system_settings.data_retention.network_performance.collect_lsp_pm, local.system_settings_defaults.data_retention.network_performance.collect_lsp_pm, null)
-  collect_link_pm          = try(local.system_settings.data_retention.network_performance.collect_link_pm, local.system_settings_defaults.data_retention.network_performance.collect_link_pm, null)
-  raw_hours                = try(local.system_settings.data_retention.network_performance.raw_retention_hours, local.system_settings_defaults.data_retention.network_performance.raw_retention_hours, null)
-  hourly_days              = try(local.system_settings.data_retention.network_performance.hourly_retention_days, local.system_settings_defaults.data_retention.network_performance.hourly_retention_days, null)
-  daily_days               = try(local.system_settings.data_retention.network_performance.daily_retention_days, local.system_settings_defaults.data_retention.network_performance.daily_retention_days, null)
-  weekly_weeks             = try(local.system_settings.data_retention.network_performance.weekly_retention_weeks, local.system_settings_defaults.data_retention.network_performance.weekly_retention_weeks, null)
 }
 
 resource "crosswork_health_settings" "health_settings" {
@@ -215,6 +238,8 @@ resource "crosswork_metric_thresholds" "metric_thresholds" {
   } }
 }
 
+### TOPOLOGY DISCOVERY ###
+
 resource "crosswork_topology_discovery_settings" "discovery" {
   count    = try(local.system_settings.topology.discovery, null) != null ? 1 : 0
   instance = var.instance
@@ -222,6 +247,8 @@ resource "crosswork_topology_discovery_settings" "discovery" {
   cdp      = try(local.system_settings.topology.discovery.cdp, local.system_settings_defaults.topology.discovery.cdp, null)
   lag      = try(local.system_settings.topology.discovery.lag, local.system_settings_defaults.topology.discovery.lag, null)
 }
+
+### TRAFFIC ENGINEERING ###
 
 resource "crosswork_te_general_settings" "te_general_settings" {
   count                                    = try(local.system_settings.traffic_engineering.general_settings, null) != null ? 1 : 0
@@ -247,6 +274,8 @@ resource "crosswork_te_flex_algo_affinity" "te_flex_algo_affinity" {
   bit_position = each.value.bit_position
 }
 
+### ALARMS AND EVENTS ###
+
 resource "crosswork_alarm_settings" "alarm_settings" {
   # The cleanup options and the processing flags are one call of the controller: a part left out takes its defaults.
   count                                   = try(local.system_settings.alarms_and_events.cleanup_options, null) != null || try(local.system_settings.alarms_and_events.general, null) != null ? 1 : 0
@@ -262,6 +291,13 @@ resource "crosswork_alarm_settings" "alarm_settings" {
   syslog_processing                       = try(local.system_settings.alarms_and_events.general.syslog_processing, local.system_settings_defaults.alarms_and_events.general.syslog_processing, null)
 }
 
+### GNMI ###
+
+locals {
+  # GNMI: the flag of each vendor that the model lists.
+  gnmi_flags = { for vendor in try(local.system_settings.alarms_and_events.gnmi, []) : vendor.name => vendor.enabled }
+}
+
 resource "crosswork_gnmi_settings" "gnmi" {
   count            = try(local.system_settings.alarms_and_events.gnmi, null) != null ? 1 : 0
   instance         = var.instance
@@ -269,11 +305,24 @@ resource "crosswork_gnmi_settings" "gnmi" {
   juniper_networks = try(local.gnmi_flags["juniper-networks"], null)
 }
 
+### STATIC ROUTES ###
+
 resource "crosswork_static_route" "static_route" {
-  for_each      = { for route in try(local.system_settings.static_routes, []) : "${route.address}/${route.prefix_length}" => route }
+  for_each      = { for route in try(local.system_settings.static_routes, []) : format("%s/%d", route.address, route.prefix_length) => route }
   instance      = var.instance
   address       = each.value.address
   prefix_length = each.value.prefix_length
+}
+
+### NOTIFICATION DESTINATIONS ###
+
+locals {
+  # Trap receivers: the model values and the controller enums.
+  trap_modes         = { auth-priv = "AuthPriv", auth-no-priv = "AuthNoPriv", no-auth-no-priv = "NoAuthNoPriv" }
+  trap_auth_types    = { hmac-md5 = "HMACMD5", hmac-sha = "HMACSHA" }
+  trap_privacy_types = { none = "NONE", cbc-des = "DES", cfb-aes-128 = "AES128", cfb-aes-192 = "AES192", cfb-aes-192c = "CiscoAES192", cfb-aes-256 = "AES256", cfb-aes-256c = "CiscoAES256" }
+  trap_receivers     = { for trap in try(local.system_settings.alarms_and_events.notification_destinations.trap_receivers, []) : try(trap.name, trap.address) => trap }
+  syslog_receivers   = { for syslog in try(local.system_settings.alarms_and_events.notification_destinations.syslog_receivers, []) : try(syslog.name, syslog.address) => syslog }
 }
 
 resource "crosswork_syslog_destination" "syslog" {

@@ -1,31 +1,15 @@
-### PORT GROUPS ###
+### PORT GROUPS SHARED ###
 
 locals {
   port_groups = try(local.crosswork.device_management.port_groups, [])
+}
 
-  # Port groups sit directly under the built-in User Defined group (StaticSystem, takes subgroups) and cannot nest,
-  # so the model is a flat list.
+### PORT GROUPS ###
+
+locals {
+  # Port groups sit directly under the built-in User Defined group (StaticSystem, takes subgroups) and cannot nest
   existing_port_groups = try(data.crosswork_groupings.port[0].items, [])
   port_group_root      = try([for group in local.existing_port_groups : group.id if group.discovery_type == "StaticSystem" && group.subgroups_allowed][0], null)
-
-  # The groups that list ports. A name is the key, as it is unique among the port groups.
-  port_group_ports = { for group in local.port_groups : group.name => group.ports if length(try(group.ports, [])) > 0 }
-
-  # The groups that have a dynamic rule. The model is an OR of entries that are each an AND of conditions; Crosswork
-  # keeps one flat list where AND binds tighter than OR, so the first condition of an entry is joined with "or", the
-  # others with "and". A speed has no space in the model (100Gbps) and one for Crosswork.
-  port_group_rules = {
-    for group in local.port_groups : group.name => flatten([
-      for entry_index, entry in group.dynamic_rules : [
-        for condition_index, condition in entry.conditions : {
-          attribute        = condition.attribute
-          operator         = condition.operator
-          value            = try(condition.attribute == "speed" ? replace(condition.value, "/^([0-9]+)([A-Za-z]+)$/", "$1 $2") : condition.value, null)
-          logical_operator = entry_index == 0 && condition_index == 0 ? null : (condition_index == 0 ? "or" : "and")
-        }
-      ]
-    ]) if length(try(group.dynamic_rules, [])) > 0
-  }
 }
 
 # Read only when the model has port groups, so a model without them needs no cluster at plan time. It gives the root.
@@ -51,6 +35,13 @@ resource "crosswork_port_groups" "port_group" {
   }
 }
 
+### PORT GROUP PORTS ###
+
+locals {
+  # The groups that list ports. A name is the key, as it is unique among the port groups.
+  port_group_ports = { for group in local.port_groups : group.name => group.ports if length(try(group.ports, [])) > 0 }
+}
+
 # The ports of a group. A port exists only once Crosswork has collected its device, so a device added in the same run
 # has no ports yet: the first apply fails until it is collected, and a second apply assigns them.
 resource "crosswork_assign_ports_to_port_group" "assignment" {
@@ -60,8 +51,26 @@ resource "crosswork_assign_ports_to_port_group" "assignment" {
   ports    = [for port in each.value : { device = crosswork_network_devices.network_device[port.device].id, port_name = port.port_name }]
 }
 
-# The dynamic rule of a group: every port that meets it joins the group, next to the ports above. Crosswork keeps one
-# rule per group, named like the group.
+### PORT GROUP RULES ###
+
+locals {
+  # The groups that have a dynamic rule. The model is an OR of entries that are each an AND of conditions; Crosswork
+  # keeps one flat list where AND binds tighter than OR, so the first condition of an entry is joined with "or", the
+  # others with "and". A speed has no space in the model (100Gbps) and one for Crosswork.
+  port_group_rules = {
+    for group in local.port_groups : group.name => flatten([
+      for entry_index, entry in group.dynamic_rules : [
+        for condition_index, condition in entry.conditions : {
+          attribute        = condition.attribute
+          operator         = condition.operator
+          value            = try(condition.attribute == "speed" ? replace(condition.value, "/^([0-9]+)([A-Za-z]+)$/", "$1 $2") : condition.value, null)
+          logical_operator = entry_index == 0 && condition_index == 0 ? null : (condition_index == 0 ? "or" : "and")
+        }
+      ]
+    ]) if length(try(group.dynamic_rules, [])) > 0
+  }
+}
+
 resource "crosswork_port_groups_rules" "rule" {
   for_each   = local.port_group_rules
   instance   = var.instance
