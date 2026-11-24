@@ -250,6 +250,7 @@ terraform plan
 | [crosswork_device_groups.level_7](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_groups) | resource |
 | [crosswork_device_groups.level_8](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_groups) | resource |
 | [crosswork_device_groups.level_9](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_groups) | resource |
+| [crosswork_device_notification_policies.device](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_notification_policies) | resource |
 | [crosswork_file_servers.file_servers](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/file_servers) | resource |
 | [crosswork_gnmi_settings.gnmi](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/gnmi_settings) | resource |
 | [crosswork_golden_config_global_variables.global_variable](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/golden_config_global_variables) | resource |
@@ -298,6 +299,7 @@ terraform plan
 | [crosswork_static_route.static_route](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/static_route) | resource |
 | [crosswork_survey_settings.survey](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/survey_settings) | resource |
 | [crosswork_syslog_destination.syslog](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/syslog_destination) | resource |
+| [crosswork_system_notification_policies.system](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/system_notification_policies) | resource |
 | [crosswork_tags.tag](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/tags) | resource |
 | [crosswork_te_flex_algo_affinity.te_flex_algo_affinity](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/te_flex_algo_affinity) | resource |
 | [crosswork_te_general_settings.te_general_settings](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/te_general_settings) | resource |
