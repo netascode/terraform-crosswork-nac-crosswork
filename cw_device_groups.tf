@@ -42,9 +42,10 @@ locals {
   ]...)
 }
 
-# Read only when the model has groups, so a model without them needs no cluster at plan time. It gives the anchor.
+# Read only when the model has groups or a Device notification policy with a group, so a model without them needs no cluster at plan time.
+# It gives the anchor and the built-in groups.
 data "crosswork_groupings" "device" {
-  count      = length(local.device_groups) > 0 ? 1 : 0
+  count      = length(local.device_groups) > 0 || length([for policy in try(local.crosswork.alerts.notification_policies, []) : policy if try(policy.device_group, null) != null]) > 0 ? 1 : 0
   instance   = var.instance
   classifier = "LocationDevices"
 }
