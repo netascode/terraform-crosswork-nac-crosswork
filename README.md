@@ -297,6 +297,7 @@ terraform plan
 | [crosswork_srte_policies.policy](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/srte_policies) | resource |
 | [crosswork_srte_sid_lists.sid_list](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/srte_sid_lists) | resource |
 | [crosswork_static_route.static_route](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/static_route) | resource |
+| [crosswork_suppression_policies.suppression](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/suppression_policies) | resource |
 | [crosswork_survey_settings.survey](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/survey_settings) | resource |
 | [crosswork_syslog_destination.syslog](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/syslog_destination) | resource |
 | [crosswork_system_notification_policies.system](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/system_notification_policies) | resource |

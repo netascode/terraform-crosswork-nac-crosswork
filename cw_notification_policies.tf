@@ -41,7 +41,7 @@ resource "crosswork_device_notification_policies" "device" {
   name             = each.value.name
   description      = try(each.value.description, local.defaults.crosswork.alerts.notification_policies.description, null)
   device_group     = local.device_notification_policy_group_ids[each.key]
-  filters          = [for filter in each.value.filters : { severities = try(length(filter.severities) == 0, true) ? null : filter.severities, category = try(filter.category, null), events = try(length(filter.events) == 0, true) ? null : filter.events }]
+  filters          = [for filter in each.value.filters : { severities = try(length(filter.severities) == 0, true) ? null : filter.severities, category = try(filter.category, null), events = try(length(filter.event_types) == 0, true) ? null : filter.event_types }]
   trap_receivers   = try(length(each.value.trap_receivers) == 0, true) ? null : [for name in each.value.trap_receivers : { name = crosswork_trap_destination.trap[name].name }]
   syslog_receivers = try(length(each.value.syslog_receivers) == 0, true) ? null : [for name in each.value.syslog_receivers : { name = crosswork_syslog_destination.syslog[name].name }]
 
