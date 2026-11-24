@@ -221,6 +221,7 @@ terraform plan
 | [crosswork_assign_devices_to_device_group.assignment](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_device_group) | resource |
 | [crosswork_assign_ports_to_port_group.assignment](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_ports_to_port_group) | resource |
 | [crosswork_backup_destination.backup_destination](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/backup_destination) | resource |
+| [crosswork_bandwidth_on_demand.bandwidth_on_demand](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/bandwidth_on_demand) | resource |
 | [crosswork_collection_jobs.collection_job](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/collection_jobs) | resource |
 | [crosswork_collection_jobs_cadence.cadence](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/collection_jobs_cadence) | resource |
 | [crosswork_credential_profiles.credential_profile](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/credential_profiles) | resource |

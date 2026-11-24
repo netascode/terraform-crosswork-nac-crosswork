@@ -27,6 +27,7 @@ resource "terraform_data" "aaa_changes" {
     crosswork_assign_devices_to_device_group.assignment,
     crosswork_assign_ports_to_port_group.assignment,
     crosswork_backup_destination.backup_destination,
+    crosswork_bandwidth_on_demand.bandwidth_on_demand,
     crosswork_collection_jobs.collection_job,
     crosswork_collection_jobs_cadence.cadence,
     crosswork_credential_profiles.credential_profile,

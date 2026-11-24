@@ -51,6 +51,22 @@ defaults:
           service_assurance:
             profile_type: system
             rule_type: system
+      bandwidth_on_demand:
+        basic:
+          enable: false
+          primary_objective: max-available-bandwidth
+          link_utilization_threshold_percent: 80
+          reoptimization_interval_seconds: 60
+          metric_reoptimization_time: "01:30"
+        advanced:
+          sr_policy_traffic: max-measured-requested
+          update_throttle_seconds: 0
+          optimizer_event_threshold_seconds: 45
+          optimizer_run_time_limit_seconds: 60
+          policy_violations: loose
+          prefer_strict_sids: false
+          debug_optimizer: false
+          debug_optimizer_max_files: 30
     data_gateways:
       pools:
         spares: 0
