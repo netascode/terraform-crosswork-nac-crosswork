@@ -244,6 +244,7 @@ terraform plan
 | [crosswork_device_access_groups.level_7](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
 | [crosswork_device_access_groups.level_8](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
 | [crosswork_device_access_groups.level_9](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
+| [crosswork_device_alarm_manager.device_alarm_manager](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_alarm_manager) | resource |
 | [crosswork_device_groups.level_1](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_groups) | resource |
 | [crosswork_device_groups.level_10](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_groups) | resource |
 | [crosswork_device_groups.level_2](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_groups) | resource |

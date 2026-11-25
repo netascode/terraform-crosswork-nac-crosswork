@@ -305,6 +305,14 @@ resource "crosswork_gnmi_settings" "gnmi" {
   juniper_networks = try(local.gnmi_flags["juniper-networks"], null)
 }
 
+### DEVICE ALARM MANAGER ###
+
+resource "crosswork_device_alarm_manager" "device_alarm_manager" {
+  count    = length(try(local.system_settings.alarms_and_events.device_alarm_manager, [])) > 0 ? 1 : 0
+  instance = var.instance
+  models   = { for row in local.system_settings.alarms_and_events.device_alarm_manager : row.name => row.enabled }
+}
+
 ### ALARM SEVERITIES ###
 
 locals {
