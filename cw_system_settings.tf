@@ -305,6 +305,25 @@ resource "crosswork_gnmi_settings" "gnmi" {
   juniper_networks = try(local.gnmi_flags["juniper-networks"], null)
 }
 
+### ALARM SEVERITIES ###
+
+locals {
+  alarm_severities_by_name = { for row in try(local.system_settings.alarms_and_events.severities, []) : row.name => row }
+  alarm_severities = [
+    for name in sort(keys(local.alarm_severities_by_name)) : {
+      name               = name
+      severity           = try(local.alarm_severities_by_name[name].severity, null)
+      auto_clear_minutes = try(local.alarm_severities_by_name[name].auto_clear_minutes, null)
+    }
+  ]
+}
+
+resource "crosswork_alarm_severities" "alarm_severities" {
+  count      = length(local.alarm_severities) > 0 ? 1 : 0
+  instance   = var.instance
+  severities = local.alarm_severities
+}
+
 ### STATIC ROUTES ###
 
 resource "crosswork_static_route" "static_route" {

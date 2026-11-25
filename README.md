@@ -216,6 +216,7 @@ terraform plan
 | [crosswork_aaa_sso_services.sso](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_sso_services) | resource |
 | [crosswork_aaa_tacacs_servers.tacacs](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/aaa_tacacs_servers) | resource |
 | [crosswork_alarm_settings.alarm_settings](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/alarm_settings) | resource |
+| [crosswork_alarm_severities.alarm_severities](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/alarm_severities) | resource |
 | [crosswork_assign_devices_to_access_group.assignment](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_access_group) | resource |
 | [crosswork_assign_devices_to_data_gateway.gateway](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_data_gateway) | resource |
 | [crosswork_assign_devices_to_device_group.assignment](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/assign_devices_to_device_group) | resource |
