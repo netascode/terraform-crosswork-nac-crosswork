@@ -67,6 +67,33 @@ defaults:
           prefer_strict_sids: false
           debug_optimizer: false
           debug_optimizer_max_files: 30
+      local_congestion_mitigation:
+        domains:
+          basic:
+            enable: false
+            color: 2000
+            utilization_threshold_percent: 100
+            utilization_hold_margin_percent: 5
+            delete_tactical_sr_policies_when_disabled: false
+            profile_id: 0
+            congestion_check_interval_seconds: 900
+            max_lcm_policies_per_set: 8
+            monitored_interfaces: selected
+            description: LCM startup config
+          advanced:
+            auto_repair_solution: false
+            stay_in_area: false
+            adjacency_hop_type: unprotected
+            operation_mode: manual
+            optimization_objective: min-igp-metric
+            deployment_timeout_seconds: 180
+            congestion_check_suspension_interval_seconds: 600
+            over_provisioning_factor_percent: 0
+            uneven_ecmp_traffic_threshold_percent: 0
+            throttle_mode_threshold: 5
+            history_retention_days: 30
+            debug_optimizer: false
+            debug_optimizer_max_files: 40
       demand_matrix:
         global:
           computation_cadence_minutes: 15
