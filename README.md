@@ -231,6 +231,8 @@ terraform plan
 | [crosswork_data_gateway_resource_configuration.resource_configurations](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_gateway_resource_configuration) | resource |
 | [crosswork_data_retention_device_performance.device_performance](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_retention_device_performance) | resource |
 | [crosswork_data_retention_network_performance.network_performance](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/data_retention_network_performance) | resource |
+| [crosswork_demand_matrix_domain.domain](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/demand_matrix_domain) | resource |
+| [crosswork_demand_matrix_global_configuration.global_configuration](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/demand_matrix_global_configuration) | resource |
 | [crosswork_device_access_groups.level_1](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
 | [crosswork_device_access_groups.level_10](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
 | [crosswork_device_access_groups.level_2](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/device_access_groups) | resource |
@@ -282,6 +284,8 @@ terraform plan
 | [crosswork_l3vpn_source_prefix_sets.source_prefix_set](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/l3vpn_source_prefix_sets) | resource |
 | [crosswork_l3vpn_tag_sets.tag_set](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/l3vpn_tag_sets) | resource |
 | [crosswork_l3vpn_vpn_services.vpn_service](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/l3vpn_vpn_services) | resource |
+| [crosswork_local_congestion_mitigation.local_congestion_mitigation](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/local_congestion_mitigation) | resource |
+| [crosswork_local_congestion_mitigation_interface_thresholds.local_congestion_mitigation_interface_thresholds](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/local_congestion_mitigation_interface_thresholds) | resource |
 | [crosswork_lock_users.lock_user](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/lock_users) | resource |
 | [crosswork_login_banner.login_banner](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/login_banner) | resource |
 | [crosswork_metric_thresholds.metric_thresholds](https://registry.terraform.io/providers/CiscoDevNet/crosswork/latest/docs/resources/metric_thresholds) | resource |

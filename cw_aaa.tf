@@ -24,6 +24,8 @@ resource "terraform_data" "aaa_changes" {
     crosswork_data_gateway_resource_configuration.resource_configurations,
     crosswork_data_retention_device_performance.device_performance,
     crosswork_data_retention_network_performance.network_performance,
+    crosswork_demand_matrix_domain.domain,
+    crosswork_demand_matrix_global_configuration.global_configuration,
     crosswork_device_access_groups.level_1,
     crosswork_device_access_groups.level_10,
     crosswork_device_access_groups.level_2,

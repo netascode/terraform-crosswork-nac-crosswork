@@ -67,6 +67,14 @@ defaults:
           prefer_strict_sids: false
           debug_optimizer: false
           debug_optimizer_max_files: 30
+      demand_matrix:
+        global:
+          computation_cadence_minutes: 15
+          minimum_demand_traffic_kbps: 0
+          debug_mode: false
+          debug_max_plan_files: 1
+        domains:
+          enable: false
     data_gateways:
       pools:
         spares: 0
