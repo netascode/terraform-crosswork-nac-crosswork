@@ -52,9 +52,9 @@ locals {
       })
     }
   )]
-  exported_aaa_servers = { for kind in ["tacacs_servers", "radius_servers", "ldap_servers"] : kind => [for server in local.crosswork.aaa[kind] : {
+  exported_aaa_servers = { for kind in ["tacacs_servers", "radius_servers", "ldap_servers"] : kind => [for server in local.crosswork.administration.aaa[kind] : {
     for key, value in server : key => value if !(contains(keys(local.secret_versions), key) && try(server[local.secret_versions[key]], null) != null)
-  }] if try(local.crosswork.aaa[kind], null) != null }
+  }] if try(local.crosswork.administration.aaa[kind], null) != null }
   exported_device_management = merge(try(local.crosswork.device_management, {}),
     try(local.crosswork.device_management.credential_profiles, null) == null ? {} : { credential_profiles = local.exported_credential_profiles },
     try(local.crosswork.device_management.network_devices, null) == null ? {} : { network_devices = local.exported_network_devices },
@@ -62,11 +62,11 @@ locals {
   exported_model = merge(local.model,
     try(local.model.crosswork, null) == null ? {} : {
       crosswork = merge(local.crosswork,
-        try(local.crosswork.administration.users, null) == null ? {} : {
-          administration = merge(local.crosswork.administration, { users = local.exported_users })
-        },
-        try(local.crosswork.aaa, null) == null ? {} : {
-          aaa = merge(local.crosswork.aaa, local.exported_aaa_servers)
+        try(local.crosswork.administration, null) == null ? {} : {
+          administration = merge(local.crosswork.administration,
+            try(local.crosswork.administration.users, null) == null ? {} : { users = local.exported_users },
+            try(local.crosswork.administration.aaa, null) == null ? {} : { aaa = merge(local.crosswork.administration.aaa, local.exported_aaa_servers) },
+          )
         },
         try(local.crosswork.device_management, null) == null ? {} : {
           device_management = local.exported_device_management
